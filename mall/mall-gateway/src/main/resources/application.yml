@@ -9,9 +9,25 @@ spring:
           uri: https://www.baidu.com
           predicates:
             - Query=k1,v1
+
         - id: test2_route
           uri: https://www.qq.com
           predicates:
             - Query=k2,v2
+
+        - id: product_route
+          uri: lb://mall-product
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api/(?<path>.*),/$\{path}
+
+        - id: admin_route
+          uri: lb://renren-fast
+          predicates:
+            - Path=/api/**
+          filters:
+            - RewritePath=/api/(?<path>.*),/renren-fast/$\{path}
+
 server:
-  port: 88
+  port: 10000

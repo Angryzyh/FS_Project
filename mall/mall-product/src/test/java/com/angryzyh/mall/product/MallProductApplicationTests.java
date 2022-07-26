@@ -9,16 +9,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class MallProductApplicationTests {
 
-
     @Autowired
     SpuCommentService commentService;
 
     @Test
     void contextLoads() {
-        SpuCommentEntity spuCommentEntity = new SpuCommentEntity();
-        spuCommentEntity.setSpuName("憨憨平已上架");
-        boolean save = commentService.save(spuCommentEntity);
-        System.out.println("save = " + save);
+//        SpuCommentEntity spuCommentEntity = new SpuCommentEntity();
+//        spuCommentEntity.setSpuName("憨憨平已上架");
+//        boolean save = commentService.save(spuCommentEntity);
+//        System.out.println("save = " + save);
     }
-
 }

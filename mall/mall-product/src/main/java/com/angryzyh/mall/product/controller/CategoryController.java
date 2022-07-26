@@ -1,21 +1,17 @@
 package com.angryzyh.mall.product.controller;
 
 import java.util.Arrays;
-import java.util.Map;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.angryzyh.mall.product.entity.CategoryEntity;
 import com.angryzyh.mall.product.service.CategoryService;
-import com.angryzyh.common.utils.PageUtils;
 import com.angryzyh.common.utils.R;
-
-
 
 /**
  * 商品三级分类
@@ -31,16 +27,15 @@ public class CategoryController {
     private CategoryService categoryService;
 
     /**
-     * 列表
+     * 全查询
+     * @return 返回 三级菜单栏列表的json串
      */
-    @RequestMapping("/list")
+    @RequestMapping("/list/tree")
     //@RequiresPermissions("product:category:list")
-    public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = categoryService.queryPage(params);
-
-        return R.ok().put("page", page);
+    public R list() {
+        List<CategoryEntity> entities = categoryService.listWithTree();
+        return R.ok().put("data", entities);
     }
-
 
     /**
      * 信息
@@ -76,13 +71,14 @@ public class CategoryController {
     }
 
     /**
-     * 删除
+     *
+     * @param catIds 要删除的商品类别id号,批量删除
+     * @return
      */
     @RequestMapping("/delete")
     //@RequiresPermissions("product:category:delete")
     public R delete(@RequestBody Long[] catIds){
-		categoryService.removeByIds(Arrays.asList(catIds));
-
+		categoryService.removeMenusByIds(Arrays.asList(catIds));
         return R.ok();
     }
 

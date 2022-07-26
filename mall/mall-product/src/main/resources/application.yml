@@ -19,3 +19,7 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+      logic-delete-value: 1 #全局配置,逻辑已删除(默认为1)
+      logic-not-delete-value: 0 #逻辑未删除(默认0)
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
