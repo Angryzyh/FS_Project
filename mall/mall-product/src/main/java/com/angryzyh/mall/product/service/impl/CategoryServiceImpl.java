@@ -38,10 +38,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             //把筛选出来的1级菜单栏&全部数据,传入到getChildMenus方法中,该方法可以获取1级菜单栏的所有子菜单栏
             .peek((x) -> x.setChildren(getChildMenus(x, entities)))
             .sorted((x1, x2) -> {
-                return (x1.getSort() == null ? 0 : x1.getSort()) - (x2.getSort() == null ? 0 : x2.getSort());
-            })
+        return (x1.getSort() == null ? 0 : x1.getSort()) - (x2.getSort() == null ? 0 : x2.getSort());
+    })
             .collect(Collectors.toList());
-    }
+}
 
     //递归查找所有菜单的子菜单
     private List<CategoryEntity> getChildMenus(CategoryEntity root, List<CategoryEntity> all) {
@@ -56,7 +56,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 return (x1.getSort() == null ? 0 : x1.getSort()) - (x2.getSort() == null ? 0 : x2.getSort());
             }).collect(Collectors.toList());
     }
-
 
     /**
      * @param asList 批量删除的 商品种类id
