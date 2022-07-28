@@ -6,6 +6,7 @@
         <groupId>com.angryzyh.mall</groupId>
         <artifactId>mall</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath/>
     </parent>
 
     <artifactId>mall-coupon</artifactId>

@@ -15,8 +15,6 @@ import com.angryzyh.mall.product.service.BrandService;
 import com.angryzyh.common.utils.PageUtils;
 import com.angryzyh.common.utils.R;
 
-
-
 /**
  * 品牌
  *
@@ -25,6 +23,7 @@ import com.angryzyh.common.utils.R;
  * @date 2022-07-22 20:21:43
  */
 @RestController
+//                   /product/brand/update
 @RequestMapping("product/brand")
 public class BrandController {
     @Autowired
@@ -41,7 +40,6 @@ public class BrandController {
         return R.ok().put("page", page);
     }
 
-
     /**
      * 信息
      */
@@ -49,7 +47,6 @@ public class BrandController {
     //@RequiresPermissions("product:brand:info")
     public R info(@PathVariable("brandId") Long brandId){
 		BrandEntity brand = brandService.getById(brandId);
-
         return R.ok().put("brand", brand);
     }
 

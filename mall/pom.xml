@@ -17,13 +17,17 @@
     </properties>
 
     <modules>
+        <!--服务模块-->
         <module>mall-coupon</module>
         <module>mall-member</module>
         <module>mall-order</module>
         <module>mall-product</module>
         <module>mall-ware</module>
+        <!--第三方模块-->
         <module>renren-fast</module>
         <module>renren-generator</module>
+        <module>mall-third-party</module>
+        <!--公共模块-->
         <module>mall-common</module>
         <module>mall-gateway</module>
     </modules>
