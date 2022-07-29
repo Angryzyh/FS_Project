@@ -2,6 +2,8 @@ server:
   port: 10000
 
 spring:
+  application:
+    name: mall-gateway
   cloud:
     nacos:
       discovery:

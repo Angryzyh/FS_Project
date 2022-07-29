@@ -3,7 +3,10 @@ package com.angryzyh.mall.product.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.angryzyh.common.validator.group.AddGroup;
+import com.angryzyh.common.validator.group.UpdateGroup;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +18,8 @@ import com.angryzyh.mall.product.service.BrandService;
 import com.angryzyh.common.utils.PageUtils;
 import com.angryzyh.common.utils.R;
 
+import javax.validation.Valid;
+
 /**
  * 品牌
  *
@@ -23,7 +28,7 @@ import com.angryzyh.common.utils.R;
  * @date 2022-07-22 20:21:43
  */
 @RestController
-//                   /product/brand/update
+//                   /product/brand/save
 @RequestMapping("product/brand")
 public class BrandController {
     @Autowired
@@ -36,7 +41,6 @@ public class BrandController {
     //@RequiresPermissions("product:brand:list")
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = brandService.queryPage(params);
-
         return R.ok().put("page", page);
     }
 
@@ -55,9 +59,8 @@ public class BrandController {
      */
     @RequestMapping("/save")
     //@RequiresPermissions("product:brand:save")
-    public R save(@RequestBody BrandEntity brand){
+    public R save(@Validated(AddGroup.class) @RequestBody BrandEntity brand){
 		brandService.save(brand);
-
         return R.ok();
     }
 
@@ -66,9 +69,8 @@ public class BrandController {
      */
     @RequestMapping("/update")
     //@RequiresPermissions("product:brand:update")
-    public R update(@RequestBody BrandEntity brand){
+    public R update(@Validated(UpdateGroup.class) @RequestBody BrandEntity brand){
 		brandService.updateById(brand);
-
         return R.ok();
     }
 
