@@ -18,8 +18,6 @@ import com.angryzyh.mall.product.service.BrandService;
 import com.angryzyh.common.utils.PageUtils;
 import com.angryzyh.common.utils.R;
 
-import javax.validation.Valid;
-
 /**
  * 品牌
  *

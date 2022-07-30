@@ -9,7 +9,9 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import lombok.NonNull;
 
 /**
  * 商品三级分类
@@ -66,6 +68,8 @@ public class CategoryEntity implements Serializable {
 	/**
 	 * 属性为 存储当前分类的子类list集合
 	 */
+	// TODO: 属性分组添加功能 级联显示 @JsonInclude该注解让空值可以不用向前端传递
+	@JsonInclude(JsonInclude.Include.NON_EMPTY)
 	@TableField(exist=false)
 	private List<CategoryEntity> children;
 

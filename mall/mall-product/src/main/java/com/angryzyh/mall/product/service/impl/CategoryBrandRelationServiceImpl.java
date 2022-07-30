@@ -1,6 +1,9 @@
 package com.angryzyh.mall.product.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -24,6 +27,13 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public List<CategoryBrandRelationEntity> getCatelogListByBrand(Long brandId) {
+        return baseMapper.selectList(new LambdaQueryWrapper<CategoryBrandRelationEntity>()
+                .eq(brandId != null, CategoryBrandRelationEntity::getBrandId, brandId)
+        );
     }
 
 }

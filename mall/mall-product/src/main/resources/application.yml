@@ -23,3 +23,8 @@ mybatis-plus:
       logic-not-delete-value: 0 #逻辑未删除(默认0)
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+#日志打印级别
+logging:
+  level:
+    com.angryzyh.mall.product: debug

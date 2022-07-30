@@ -1,10 +1,15 @@
 package com.angryzyh.mall.product;
 
 import com.angryzyh.mall.product.entity.SpuCommentEntity;
+import com.angryzyh.mall.product.service.CategoryService;
 import com.angryzyh.mall.product.service.SpuCommentService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @SpringBootTest
 class MallProductApplicationTests {
@@ -12,11 +17,18 @@ class MallProductApplicationTests {
     @Autowired
     SpuCommentService commentService;
 
+    @Autowired
+    CategoryService categoryService;
+
     @Test
     void contextLoads() {
 //        SpuCommentEntity spuCommentEntity = new SpuCommentEntity();
 //        spuCommentEntity.setSpuName("憨憨平已上架");
 //        boolean save = commentService.save(spuCommentEntity);
 //        System.out.println("save = " + save);
+
+        // 测试 递归调用查询 分类路径
+        Long[] catelogPath = categoryService.findCatelogPath(225L);
+        System.out.println("catelogPath = " + Arrays.asList(catelogPath));
     }
 }

@@ -1,10 +1,10 @@
 package com.angryzyh.mall.product.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
-import java.util.Date;
 import lombok.Data;
 
 /**
@@ -45,4 +45,7 @@ public class AttrGroupEntity implements Serializable {
 	 */
 	private Long catelogId;
 
+	// TODO 属性分组修改,级联选择器回显,需要携带完整的路径
+	@TableField(exist=false)
+	private Long[] catelogPath;
 }
