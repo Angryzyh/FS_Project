@@ -64,7 +64,8 @@ public class CategoryController {
     @RequestMapping("/update")
     //@RequiresPermissions("product:category:update")
     public R update(@RequestBody CategoryEntity category){
-		categoryService.updateById(category);
+        //在category表自己更新的时候也要   更新其他冗余的表中 分类名
+		categoryService.updateByIdAndAllTable(category);
         return R.ok();
     }
 

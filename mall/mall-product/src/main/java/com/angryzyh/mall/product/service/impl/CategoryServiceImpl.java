@@ -1,5 +1,9 @@
 package com.angryzyh.mall.product.service.impl;
 
+import com.angryzyh.mall.product.service.CategoryBrandRelationService;
+import com.sun.xml.internal.bind.v2.TODO;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,9 +15,13 @@ import com.angryzyh.common.utils.Query;
 import com.angryzyh.mall.product.dao.CategoryDao;
 import com.angryzyh.mall.product.entity.CategoryEntity;
 import com.angryzyh.mall.product.service.CategoryService;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
+
+    @Autowired
+    CategoryBrandRelationService categoryBrandRelationService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -84,5 +92,19 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return temp;
     }
 
-
+    /**
+     * ∵category(分类)表有可能更新name(分类名称)
+     * ∴同步更新其他表中的name(分类名称)
+     * @param category 分类对象
+     */
+    @Transactional // 事务回滚
+    @Override
+    public void updateByIdAndAllTable(CategoryEntity category) {
+        this.updateById(category);
+        if (StringUtils.isNotBlank(category.getName())) {
+            // 同步更新category_brand_relation(分类-品牌关系)表中的catelog_name(品牌名称)
+            categoryBrandRelationService.updateCategoryById(category.getCatId(),category.getName());
+            // TODO 更新其他关联category(分类)表,当该表更新时,其他表也应当更新
+        }
+    }
 }

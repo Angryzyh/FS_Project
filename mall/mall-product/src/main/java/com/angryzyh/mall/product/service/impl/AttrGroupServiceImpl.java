@@ -24,32 +24,34 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
      */
     @Override
     public PageUtils queryPage(Map<String, Object> params,Long catelogId) {
-        /*两种查询清空*/
+        /*两种查询情况*/
+        // 两种查询都必须是可以 根据关键词检索查询
+        LambdaQueryWrapper<AttrGroupEntity> queryWrapper = new LambdaQueryWrapper<>();
+        //获取关键词
+        String key = (String) params.get("key");
+        //SELECT attr_group_id,attr_group_name,sort,descript,icon,catelog_id
+        // FROM pms_attr_group
+        // WHERE (catelog_id = ? AND (attr_group_id = ? OR attr_group_name LIKE ? OR descript LIKE ?))
+        //==> Parameters: 225(Long), 2(String), %2%(String), %2%(String)
+        queryWrapper
+                .and(StringUtils.isNotBlank("key"),
+                        x -> x.eq(AttrGroupEntity::getAttrGroupId, key)
+                                .or().like(AttrGroupEntity::getAttrGroupName, key)
+                                .or().like(AttrGroupEntity::getDescript, key)
+                );
         //1. 当前端传入的catelogId为默认值0时, 代表全查询
         if (catelogId == 0) {
             IPage<AttrGroupEntity> page = this.page(
                     new Query<AttrGroupEntity>().getPage(params),
-                    new QueryWrapper<>()
+                    queryWrapper
             );
             return new PageUtils(page);
         } else {
         //2. 当传入点击获取的 catelogId 为 具体的三级分类时
-            String key = (String) params.get("key");
-            LambdaQueryWrapper<AttrGroupEntity> queryWrapper = new LambdaQueryWrapper<>();
-            //SELECT attr_group_id,attr_group_name,sort,descript,icon,catelog_id
-            // FROM pms_attr_group
-            // WHERE (catelog_id = ? AND (attr_group_id = ? OR attr_group_name LIKE ? OR descript LIKE ?))
-            //==> Parameters: 225(Long), 2(String), %2%(String), %2%(String)
-            queryWrapper
-                    .eq(AttrGroupEntity::getCatelogId, catelogId)
-                    .and(StringUtils.isNotBlank("key"),
-                            x -> x.eq(AttrGroupEntity::getAttrGroupId, key)
-                                    .or().like(AttrGroupEntity::getAttrGroupName, key)
-                                    .or().like(AttrGroupEntity::getDescript, key)
-                    );
             IPage<AttrGroupEntity> page = this.page(
                     new Query<AttrGroupEntity>().getPage(params),
-                    queryWrapper
+                    // 判断catelogId 有具体id值后  再追加 查询具体的分类组信息
+                    queryWrapper.eq(AttrGroupEntity::getCatelogId, catelogId)
             );
             return new PageUtils(page);
         }

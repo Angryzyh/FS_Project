@@ -22,8 +22,6 @@ public class SkuSaleAttrValueServiceImpl extends ServiceImpl<SkuSaleAttrValueDao
                 new Query<SkuSaleAttrValueEntity>().getPage(params),
                 new QueryWrapper<SkuSaleAttrValueEntity>()
         );
-
         return new PageUtils(page);
     }
-
 }

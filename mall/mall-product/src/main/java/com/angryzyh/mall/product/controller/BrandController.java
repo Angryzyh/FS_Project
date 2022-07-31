@@ -20,7 +20,6 @@ import com.angryzyh.common.utils.R;
 
 /**
  * 品牌
- *
  * @author angryzyh
  * @email 1792090548@qq.com
  * @date 2022-07-22 20:21:43
@@ -68,7 +67,8 @@ public class BrandController {
     @RequestMapping("/update")
     //@RequiresPermissions("product:brand:update")
     public R update(@Validated(UpdateGroup.class) @RequestBody BrandEntity brand){
-		brandService.updateById(brand);
+        //在brand表自己更新的时候也要 (AndAllTable) 更新其他冗余的表中品牌名
+		brandService.updateByIdAndAllTable(brand);
         return R.ok();
     }
 
@@ -79,8 +79,6 @@ public class BrandController {
     //@RequiresPermissions("product:brand:delete")
     public R delete(@RequestBody Long[] brandIds){
 		brandService.removeByIds(Arrays.asList(brandIds));
-
         return R.ok();
     }
-
 }

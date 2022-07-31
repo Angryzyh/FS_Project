@@ -3,6 +3,7 @@ package com.angryzyh.mall.product.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.angryzyh.mall.product.vo.AttrVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,8 +15,6 @@ import com.angryzyh.mall.product.entity.AttrEntity;
 import com.angryzyh.mall.product.service.AttrService;
 import com.angryzyh.common.utils.PageUtils;
 import com.angryzyh.common.utils.R;
-
-
 
 /**
  * 商品属性
@@ -53,14 +52,16 @@ public class AttrController {
         return R.ok().put("attr", attr);
     }
 
+
     /**
-     * 保存
+     * 新增属性 采用vo多收集 属性分组po 的id字段
+     * @param attrVo
+     * @return
      */
     @RequestMapping("/save")
     //@RequiresPermissions("product:attr:save")
-    public R save(@RequestBody AttrEntity attr){
-		attrService.save(attr);
-
+    public R save(@RequestBody AttrVo attrVo){
+		attrService.saveAttrVo(attrVo);
         return R.ok();
     }
 

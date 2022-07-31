@@ -18,6 +18,16 @@ public interface CategoryBrandRelationService extends IService<CategoryBrandRela
 
     PageUtils queryPage(Map<String, Object> params);
 
+    // 查询根据品牌 查询拥有的分类信息
     List<CategoryBrandRelationEntity> getCatelogListByBrand(Long brandId);
+
+    // 保存 新增的品牌 拥有的分类
+    void saveCategoryBrandRelation(CategoryBrandRelationEntity categoryBrandRelation);
+
+    // 同步更新表中的 品牌名称
+    void updateBrandById(Long brandId, String name);
+
+    // 同步更新表中的 分类名称
+    void updateCategoryById(Long catId, String name);
 }
 

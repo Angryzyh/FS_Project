@@ -1,6 +1,7 @@
 package com.angryzyh.mall.product;
 
 import com.angryzyh.mall.product.entity.SpuCommentEntity;
+import com.angryzyh.mall.product.service.CategoryBrandRelationService;
 import com.angryzyh.mall.product.service.CategoryService;
 import com.angryzyh.mall.product.service.SpuCommentService;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,9 @@ class MallProductApplicationTests {
     @Autowired
     CategoryService categoryService;
 
+    @Autowired
+    CategoryBrandRelationService categoryBrandRelationService;
+
     @Test
     void contextLoads() {
 //        SpuCommentEntity spuCommentEntity = new SpuCommentEntity();
@@ -28,7 +32,8 @@ class MallProductApplicationTests {
 //        System.out.println("save = " + save);
 
         // 测试 递归调用查询 分类路径
-        Long[] catelogPath = categoryService.findCatelogPath(225L);
-        System.out.println("catelogPath = " + Arrays.asList(catelogPath));
+       /* Long[] catelogPath = categoryService.findCatelogPath(225L);
+        System.out.println("catelogPath = " + Arrays.asList(catelogPath));*/
+
     }
 }

@@ -41,7 +41,7 @@ public class CategoryBrandRelationController {
      * 获取品牌关联的分类
      * 根据id
      */
-    // todo 1111111111111111111111111111111111111
+    //
     @GetMapping("/catelog/list")
     //@RequiresPermissions("product:categorybrandrelation:list")
     public R catelogList(@RequestParam Long brandId){
@@ -62,10 +62,10 @@ public class CategoryBrandRelationController {
     /**
      * 保存
      */
-    @RequestMapping("/save")
+    @PostMapping ("/save")
     //@RequiresPermissions("product:categorybrandrelation:save")
     public R save(@RequestBody CategoryBrandRelationEntity categoryBrandRelation){
-		categoryBrandRelationService.save(categoryBrandRelation);
+		categoryBrandRelationService.saveCategoryBrandRelation(categoryBrandRelation);
         return R.ok();
     }
 

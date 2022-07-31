@@ -1,5 +1,6 @@
 package com.angryzyh.mall.product.service;
 
+import com.angryzyh.mall.product.vo.AttrVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.angryzyh.common.utils.PageUtils;
 import com.angryzyh.mall.product.entity.AttrEntity;
@@ -16,5 +17,8 @@ import java.util.Map;
 public interface AttrService extends IService<AttrEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    // 新增属性
+    void saveAttrVo(AttrVo attrVo);
 }
 
