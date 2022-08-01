@@ -1,6 +1,5 @@
 package com.angryzyh.mall.product.vo;
 
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 @Data
@@ -8,7 +7,6 @@ public class AttrVo {
     /**
      * 属性id
      */
-    @TableId
     private Long attrId;
     /**
      * 属性名

@@ -1,5 +1,6 @@
 package com.angryzyh.mall.product.service;
 
+import com.angryzyh.mall.product.vo.AttrRespVo;
 import com.angryzyh.mall.product.vo.AttrVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.angryzyh.common.utils.PageUtils;
@@ -20,5 +21,14 @@ public interface AttrService extends IService<AttrEntity> {
 
     // 新增属性
     void saveAttrVo(AttrVo attrVo);
+
+    // 查询分类规格参数   根据分类id查询 属性信息
+    PageUtils listByCatelogId(Map<String, Object> params, Long catelogId);
+
+    // 查询 单个属性信息,用于修改回显
+    AttrRespVo getAttrInfo(Long attrId);
+
+    // 修改 属性信息
+    void updateAttrVo(AttrVo attrVo);
 }
 

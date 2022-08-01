@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import java.util.Map;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.angryzyh.common.utils.PageUtils;
@@ -34,7 +33,7 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
         // WHERE (catelog_id = ? AND (attr_group_id = ? OR attr_group_name LIKE ? OR descript LIKE ?))
         //==> Parameters: 225(Long), 2(String), %2%(String), %2%(String)
         queryWrapper
-                .and(StringUtils.isNotBlank("key"),
+                .and(StringUtils.isNotEmpty(key),
                         x -> x.eq(AttrGroupEntity::getAttrGroupId, key)
                                 .or().like(AttrGroupEntity::getAttrGroupName, key)
                                 .or().like(AttrGroupEntity::getDescript, key)
@@ -47,11 +46,12 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
             );
             return new PageUtils(page);
         } else {
-        //2. 当传入点击获取的 catelogId 为 具体的三级分类时
+            queryWrapper.and(x->x.eq(AttrGroupEntity::getCatelogId, catelogId));
+            //2. 当传入点击获取的 catelogId 为 具体的三级分类时
             IPage<AttrGroupEntity> page = this.page(
                     new Query<AttrGroupEntity>().getPage(params),
                     // 判断catelogId 有具体id值后  再追加 查询具体的分类组信息
-                    queryWrapper.eq(AttrGroupEntity::getCatelogId, catelogId)
+                    queryWrapper
             );
             return new PageUtils(page);
         }
