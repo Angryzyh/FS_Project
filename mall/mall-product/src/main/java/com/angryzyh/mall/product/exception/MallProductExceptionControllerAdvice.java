@@ -19,7 +19,9 @@ public class MallProductExceptionControllerAdvice {
 
     @ExceptionHandler(value = {MethodArgumentNotValidException.class, UnexpectedTypeException.class})
     public R handleValidationException(MethodArgumentNotValidException exception) {
+        // 异常打印到日志
         log.error("数据校验异常,异常信息:{},异常类型:{}", exception.getMessage(), exception.getClass());
+        // 绑定具体异常发生的数据校验属性
         BindingResult bindingResult = exception.getBindingResult();
         /*map集合forEach获取*/
         /*Map<String,String> errorMap = new HashMap<>();
@@ -27,10 +29,10 @@ public class MallProductExceptionControllerAdvice {
             errorMap.put(fieldError.getField(), fieldError.getDefaultMessage());
         });*/
         /*stream流获取*/
-        Map<String,String> errorMap = bindingResult.getFieldErrors()
+        Map<String, String> errorMap = bindingResult.getFieldErrors()
                 .stream()
                 .collect(Collectors.toConcurrentMap(FieldError::getField, FieldError::getDefaultMessage));
-        return R.error(BizCodeEnum.VALIDATOR_EXCEPTION.getCode(), BizCodeEnum.VALIDATOR_EXCEPTION.getMsg()).put("data",errorMap);
+        return R.error(BizCodeEnum.VALIDATOR_EXCEPTION.getCode(), BizCodeEnum.VALIDATOR_EXCEPTION.getMsg()).put("data", errorMap);
     }
 
     /*全局异常处理*/

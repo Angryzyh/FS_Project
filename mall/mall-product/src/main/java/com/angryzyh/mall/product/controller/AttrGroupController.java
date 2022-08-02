@@ -1,15 +1,16 @@
 package com.angryzyh.mall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.angryzyh.mall.product.dao.AttrAttrgroupRelationDao;
+import com.angryzyh.mall.product.entity.AttrEntity;
+import com.angryzyh.mall.product.service.AttrService;
 import com.angryzyh.mall.product.service.CategoryService;
+import com.angryzyh.mall.product.vo.AttrGroupRelationVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.angryzyh.mall.product.entity.AttrGroupEntity;
 import com.angryzyh.mall.product.service.AttrGroupService;
@@ -32,6 +33,45 @@ public class AttrGroupController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    AttrService attrService;
+
+
+    //  查询属性组 所 关联的 属性
+    //  /product/attrgroup/{attrgroupId}/attr/relation
+    @GetMapping("{attrgroupId}/attr/relation")
+    public R getAttrRelation(@PathVariable("attrgroupId") Long attrgroupId) {
+        List<AttrEntity> attrEntitys = attrService.getAttrRelation(attrgroupId);
+        return R.ok().put("data", attrEntitys);
+    }
+
+    /**
+     * GET
+     * /product/attrgroup/{attrgroupId}/noattr/relation
+     *  新增 关联 ,需要查询 当前分类下的属性,对应的没有关联属性组的 属性
+     * @param attrgroup
+     * @return
+     */
+    @GetMapping("/{attrgroupId}/noattr/relation")
+    public R attrNoRelation(@PathVariable("attrgroupId") Long attrgroupId, @RequestParam Map<String, Object> params) {
+        PageUtils page = attrService.getNoRelaionAttr(params,attrgroupId);
+        return R.ok().put("page", page);
+    }
+
+
+    /**
+     * deleteList
+     * POST: /product/attrgroup/attr/relation/delete
+     * 删除 关联属性  即 属性po
+     * @return
+     */
+    @PostMapping("/attr/relation/delete")
+    public R deleteAttrRelation(@RequestBody AttrGroupRelationVo[] vos) {
+        attrGroupService.deleteAttrRelation(vos);
+        return R.ok();
+    }
+
     /**
      * 列表
      */

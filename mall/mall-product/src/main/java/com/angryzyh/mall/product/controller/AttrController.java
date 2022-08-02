@@ -8,7 +8,6 @@ import com.angryzyh.mall.product.vo.AttrVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.angryzyh.mall.product.entity.AttrEntity;
 import com.angryzyh.mall.product.service.AttrService;
 import com.angryzyh.common.utils.PageUtils;
 import com.angryzyh.common.utils.R;
@@ -37,14 +36,14 @@ public class AttrController {
     }
 
     /**
-     * 列表 查询
+     * 列表 查询 spu sku公用
      */
     @GetMapping("/{attrType}/list/{catelogId}")
     //@RequiresPermissions("product:attr:list")
     public R listByCatelogId(@RequestParam Map<String, Object> params,
                              @PathVariable("catelogId") Long catelogId,
                              @PathVariable("attrType") String type){
-        PageUtils page = attrService.listByCatelogId(params,catelogId);
+        PageUtils page = attrService.listByCatelogId(params,catelogId,type);
         return R.ok().put("page", page);
     }
 

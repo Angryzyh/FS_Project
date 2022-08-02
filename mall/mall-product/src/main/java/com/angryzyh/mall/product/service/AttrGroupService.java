@@ -1,5 +1,6 @@
 package com.angryzyh.mall.product.service;
 
+import com.angryzyh.mall.product.vo.AttrGroupRelationVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.angryzyh.common.utils.PageUtils;
 import com.angryzyh.mall.product.entity.AttrGroupEntity;
@@ -17,5 +18,8 @@ public interface AttrGroupService extends IService<AttrGroupEntity> {
 
     //分页查询 <属性分组>信息, 根据前端传入的三级分类的id来查询 孙子分类所 包含的 属性分组
     PageUtils queryPage(Map<String, Object> params, Long catelogId);
+
+    // 删除 AttrGroupRelation   关联关系表中的信息
+    void deleteAttrRelation(AttrGroupRelationVo[] vos);
 }
 

@@ -1,9 +1,22 @@
 package com.angryzyh.mall.product.service.impl;
 
+import com.angryzyh.mall.product.dao.AttrAttrgroupRelationDao;
+import com.angryzyh.mall.product.entity.AttrAttrgroupRelationEntity;
+import com.angryzyh.mall.product.entity.AttrEntity;
+import com.angryzyh.mall.product.service.AttrService;
+import com.angryzyh.mall.product.vo.AttrGroupRelationVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.angryzyh.common.utils.PageUtils;
@@ -15,6 +28,9 @@ import com.angryzyh.mall.product.service.AttrGroupService;
 
 @Service("attrGroupService")
 public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEntity> implements AttrGroupService {
+
+    @Autowired
+    AttrAttrgroupRelationDao attrAttrgroupRelationDao;
 
     /** 分页 关键词匹配 查询
      * @param params 前端发来的 请求参数包含分页,排序,关键词等信息
@@ -55,5 +71,23 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
             );
             return new PageUtils(page);
         }
+    }
+
+    /**
+     * deleteList
+     * 删除 AttrGroupRelation   关联关系表中的信息
+     *
+     * @param vos 前端传参 attrId , attrGroupId
+     */
+    @Override
+    public void deleteAttrRelation(AttrGroupRelationVo[] vos) {
+        List<AttrAttrgroupRelationEntity> relationEntitys = Arrays.stream(vos).map(x -> {
+            AttrAttrgroupRelationEntity entitys = new AttrAttrgroupRelationEntity();
+            BeanUtils.copyProperties(x, entitys);
+            return entitys;
+        }).collect(Collectors.toList());
+        // xml批量删除
+        attrAttrgroupRelationDao.deleteSelect(relationEntitys);
+
     }
 }
