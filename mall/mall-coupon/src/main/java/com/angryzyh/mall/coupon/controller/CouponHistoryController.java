@@ -49,7 +49,6 @@ public class CouponHistoryController {
     //@RequiresPermissions("coupon:couponhistory:info")
     public R info(@PathVariable("id") Long id){
 		CouponHistoryEntity couponHistory = couponHistoryService.getById(id);
-
         return R.ok().put("couponHistory", couponHistory);
     }
 
@@ -60,7 +59,6 @@ public class CouponHistoryController {
     //@RequiresPermissions("coupon:couponhistory:save")
     public R save(@RequestBody CouponHistoryEntity couponHistory){
 		couponHistoryService.save(couponHistory);
-
         return R.ok();
     }
 

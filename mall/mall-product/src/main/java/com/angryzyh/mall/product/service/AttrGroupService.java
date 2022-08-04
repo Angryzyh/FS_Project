@@ -1,10 +1,12 @@
 package com.angryzyh.mall.product.service;
 
 import com.angryzyh.mall.product.vo.AttrGroupRelationVo;
+import com.angryzyh.mall.product.vo.AttrGroupWithAttrRespVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.angryzyh.common.utils.PageUtils;
 import com.angryzyh.mall.product.entity.AttrGroupEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,5 +23,8 @@ public interface AttrGroupService extends IService<AttrGroupEntity> {
 
     // 删除 AttrGroupRelation   关联关系表中的信息
     void deleteAttrRelation(AttrGroupRelationVo[] vos);
+
+    // 获取分类下所有分组&关联属性
+    List<AttrGroupWithAttrRespVo> getAttrAttrGroupByCatelogId(Long catelogId);
 }
 

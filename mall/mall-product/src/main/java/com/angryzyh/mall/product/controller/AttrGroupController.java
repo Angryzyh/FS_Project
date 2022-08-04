@@ -4,11 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import com.angryzyh.mall.product.dao.AttrAttrgroupRelationDao;
 import com.angryzyh.mall.product.entity.AttrEntity;
+import com.angryzyh.mall.product.service.AttrAttrgroupRelationService;
 import com.angryzyh.mall.product.service.AttrService;
 import com.angryzyh.mall.product.service.CategoryService;
 import com.angryzyh.mall.product.vo.AttrGroupRelationVo;
+import com.angryzyh.mall.product.vo.AttrGroupWithAttrRespVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +38,19 @@ public class AttrGroupController {
     @Autowired
     AttrService attrService;
 
+    @Autowired
+    AttrAttrgroupRelationService attrAttrgroupRelationService;
+
+    /*
+    * 获取分类下所有分组&关联属性
+      GET  product/attrgroup/{catelogId}/withattr
+      定位:商品维护->发布商品->2.规格参数
+    * */
+    @GetMapping("{catelogId}/withattr")
+    public R getAttrAttrGroupByCatelogId(@PathVariable("catelogId") Long catelogId) {
+        List<AttrGroupWithAttrRespVo> attrGroupWithAttrResp = attrGroupService.getAttrAttrGroupByCatelogId(catelogId);
+        return R.ok().put("data", attrGroupWithAttrResp);
+    }
 
     //  查询属性组 所 关联的 属性
     //  /product/attrgroup/{attrgroupId}/attr/relation
@@ -50,13 +64,26 @@ public class AttrGroupController {
      * GET
      * /product/attrgroup/{attrgroupId}/noattr/relation
      *  新增 关联 ,需要查询 当前分类下的属性,对应的没有关联属性组的 属性
-     * @param attrgroup
+     * @param attrgroupId 属性组id
      * @return
      */
     @GetMapping("/{attrgroupId}/noattr/relation")
     public R attrNoRelation(@PathVariable("attrgroupId") Long attrgroupId, @RequestParam Map<String, Object> params) {
         PageUtils page = attrService.getNoRelaionAttr(params,attrgroupId);
         return R.ok().put("page", page);
+    }
+
+    /**
+     * insert
+     * 接上面 方法 ,查询到未关联的属性后,保存属性关联
+     *
+     * @param vos 封装的 属性id和属性组id
+     * @return R.ok()
+     */
+    @PostMapping("attr/relation")
+    public R saveRelation(@RequestBody List<AttrGroupRelationVo> vos) {
+        attrAttrgroupRelationService.saveRelation(vos);
+        return R.ok();
     }
 
 

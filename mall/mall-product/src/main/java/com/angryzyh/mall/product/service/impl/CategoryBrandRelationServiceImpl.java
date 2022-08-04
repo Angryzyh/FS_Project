@@ -4,13 +4,20 @@ import com.angryzyh.mall.product.dao.BrandDao;
 import com.angryzyh.mall.product.dao.CategoryDao;
 import com.angryzyh.mall.product.entity.BrandEntity;
 import com.angryzyh.mall.product.entity.CategoryEntity;
+import com.angryzyh.mall.product.vo.BrandRespVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -90,5 +97,30 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
     @Override
     public void updateCategoryById(Long catId, String name) {
         baseMapper.updateCategoryById(catId, name);
+    }
+
+    /**
+     *  根据分类id 查询到当前分类&品牌关联 表下的品牌名和品牌id
+     *
+     * @param catId  分类id
+     * @return "brandId": 0,"brandName": "string"
+     */
+    @Override
+    public List<BrandRespVo> getBrandByCatId(Long catId) {
+        List<CategoryBrandRelationEntity> categoryBrandRelationEntityList = baseMapper.selectList(new LambdaQueryWrapper<CategoryBrandRelationEntity>()
+                .select(CategoryBrandRelationEntity::getBrandId,CategoryBrandRelationEntity::getBrandName)
+                .eq(CategoryBrandRelationEntity::getCatelogId, catId));
+        List<BrandRespVo> collect = null;
+        if (!categoryBrandRelationEntityList.isEmpty()) {
+            collect = categoryBrandRelationEntityList
+                    .stream()
+                    .map(categoryBrandRelationEntity -> {
+                        BrandRespVo brandRespVo = new BrandRespVo();
+                        BeanUtils.copyProperties(categoryBrandRelationEntity, brandRespVo);
+                        return brandRespVo;
+                    })
+                    .collect(Collectors.toList());
+        }
+        return collect;
     }
 }

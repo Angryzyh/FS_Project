@@ -15,7 +15,6 @@ import javax.validation.constraints.*;
 
 /**
  * 品牌
- * 
  * @author angryzyh
  * @email 1792090548@qq.com
  * @date 2022-07-22 20:21:43

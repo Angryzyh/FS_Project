@@ -3,7 +3,11 @@ package com.angryzyh.mall.product.controller;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.angryzyh.mall.product.entity.BrandEntity;
+import com.angryzyh.mall.product.vo.BrandRespVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +29,19 @@ import com.angryzyh.common.utils.R;
 public class CategoryBrandRelationController {
     @Autowired
     private CategoryBrandRelationService categoryBrandRelationService;
+
+    /**
+     * selectAll
+     * 查询分类关联的品牌名称
+     * GET
+     * /product/categorybrandrelation/brands/list
+     * @return
+     */
+    @GetMapping("brands/list")
+    public R relationBrandsList(@RequestParam("catId") Long catId) {
+        List<BrandRespVo> brandEntities = categoryBrandRelationService.getBrandByCatId(catId);
+        return R.ok().put("data",brandEntities);
+    }
 
     /**
      * 列表

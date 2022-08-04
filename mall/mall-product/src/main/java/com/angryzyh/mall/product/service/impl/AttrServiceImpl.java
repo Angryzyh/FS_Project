@@ -75,7 +75,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         // 保存attrPo到数据库
         this.save(attrEntity);
         // 判断要存储的属性  他的AttrType 0为销售属性sale(sku) ,1为规格参数base(spu)
-        if (attrEntity.getAttrType() == ProductConstant.AttrEnum.ATTR_ENUM_BASE.getCode()) {
+        if (attrEntity.getAttrType() == ProductConstant.AttrEnum.ATTR_ENUM_BASE.getCode()&& attrVo.getAttrGroupId()!=null) {
             // 再保存 attr&attrGroup中间po到数据库
             AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrAttrgroupRelationEntity();
             attrAttrgroupRelationEntity.setAttrGroupId(attrVo.getAttrGroupId());
@@ -126,7 +126,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
                         new LambdaQueryWrapper<AttrAttrgroupRelationEntity>()
                                 .eq(AttrAttrgroupRelationEntity::getAttrId, attrEntity.getAttrId()));
                 // 根据属性id查找  属性&属性组关联表 可能为空
-                if (attrAttrgroupRelationEntity != null) {
+                if (attrAttrgroupRelationEntity != null && attrAttrgroupRelationEntity.getAttrGroupId()!=null) {
                     AttrGroupEntity attrGroupEntity = attrGroupDao.selectById(attrAttrgroupRelationEntity.getAttrGroupId());
                     attrRespVo.setGroupName(attrGroupEntity.getAttrGroupName());
                 }
@@ -215,7 +215,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
      * 业务调用--> {@link AttrGroupController#getAttrRelation}
      */
     @Override
-    public  List<AttrEntity>  getAttrRelation(Long attrgroupId) {
+    public List<AttrEntity> getAttrRelation(Long attrgroupId) {
         List<AttrAttrgroupRelationEntity> attrAttrgroupRelationEntities = attrGroupRelationDao.selectList(new LambdaQueryWrapper<AttrAttrgroupRelationEntity>()
                 .eq(attrgroupId != null, AttrAttrgroupRelationEntity::getAttrGroupId, attrgroupId)
         );
@@ -243,7 +243,6 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 
     /**
      * 先查询 当前属性组 一同的 分类 下的属性表中没有被关联的属性
-     *
      * @param params      前端分页参数
      * @param attrgroupId 属性组id
      * @return

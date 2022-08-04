@@ -10,15 +10,22 @@ spring:
         server-addr: 127.0.0.1:8848
     gateway:
       routes:
-        - id: test1_route
-          uri: https://www.baidu.com
-          predicates:
-            - Query=k1,v1
+#        - id: test1_route
+#          uri: https://www.baidu.com
+#          predicates:
+#            - Query=k1,v1
+#
+#        - id: test2_route
+#          uri: https://www.qq.com
+#          predicates:
+#            - Query=k2,v2
 
-        - id: test2_route
-          uri: https://www.qq.com
+        - id: member_route
+          uri: lb://mall-member
           predicates:
-            - Query=k2,v2
+            - Path=/api/member/**
+          filters:
+            - RewritePath=/api/(?<path>.*),/$\{path}
 
         - id: product_route
           uri: lb://mall-product

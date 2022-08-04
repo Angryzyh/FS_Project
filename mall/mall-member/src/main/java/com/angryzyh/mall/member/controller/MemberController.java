@@ -43,8 +43,6 @@ public class MemberController {
     private String uName;
     @Value("${u.age}")
     private Integer uAge;
-
-
     @RequestMapping("hhp")
     public R test() {
         MemberEntity memberEntity = new MemberEntity();

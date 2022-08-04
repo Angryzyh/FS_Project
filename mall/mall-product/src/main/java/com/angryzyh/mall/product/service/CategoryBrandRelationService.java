@@ -1,5 +1,7 @@
 package com.angryzyh.mall.product.service;
 
+import com.angryzyh.mall.product.entity.BrandEntity;
+import com.angryzyh.mall.product.vo.BrandRespVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.angryzyh.common.utils.PageUtils;
 import com.angryzyh.mall.product.entity.CategoryBrandRelationEntity;
@@ -29,5 +31,8 @@ public interface CategoryBrandRelationService extends IService<CategoryBrandRela
 
     // 同步更新表中的 分类名称
     void updateCategoryById(Long catId, String name);
+
+    // 关联分类 查询到当前分类下的品牌名
+    List<BrandRespVo> getBrandByCatId(Long catId);
 }
 
