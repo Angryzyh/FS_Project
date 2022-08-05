@@ -1310,28 +1310,6 @@ window.Docs = {
                 // Clean up dangling references.
                 Empty.prototype = null;
             }
-
-            // TODO
-            // 18. Set the [[Extensible]] internal property of F to true.
-
-            // TODO
-            // 19. Let thrower be the [[ThrowTypeError]] function Object (13.2.3).
-            // 20. Call the [[DefineOwnProperty]] internal method of F with
-            //   arguments "caller", PropertyDescriptor {[[Get]]: thrower, [[Set]]:
-            //   thrower, [[Enumerable]]: false, [[Configurable]]: false}, and
-            //   false.
-            // 21. Call the [[DefineOwnProperty]] internal method of F with
-            //   arguments "arguments", PropertyDescriptor {[[Get]]: thrower,
-            //   [[Set]]: thrower, [[Enumerable]]: false, [[Configurable]]: false},
-            //   and false.
-
-            // TODO
-            // NOTE Function objects created using Function.prototype.bind do not
-            // have a prototype property or the [[Code]], [[FormalParameters]], and
-            // [[Scope]] internal properties.
-            // XXX can't delete prototype in pure-js.
-
-            // 22. Return F.
             return bound;
         }
     });
@@ -4883,7 +4861,7 @@ Resolver.prototype.resolve = function (spec, arg1, arg2, arg3) {
       }
       else if(self.failedUrls.indexOf(item.root) === -1) {
         var obj = {
-          useJQuery: false,  // TODO
+          useJQuery: false,
           url: item.root,
           method: 'get',
           headers: {
@@ -5449,8 +5427,6 @@ Resolver.prototype.resolveAllOf = function(spec, obj, depth) {
                 output['x-resolved-from'].push(source);
               }
               else {
-                // TODO: need to merge this property
-                // console.log('what to do with ' + part)
               }
             }
           }
@@ -6262,8 +6238,6 @@ SwaggerSpecConverter.prototype.responseMessages = function(operation, existingOp
   // build default response from the operation (1.x)
   var defaultResponse = {};
   this.dataType(existingOperation, defaultResponse);
-  // TODO: look into the real problem of rendering responses in swagger-ui
-  // ....should reponseType have an implicit schema?
   if(!defaultResponse.schema && defaultResponse.type) {
     defaultResponse = {schema: defaultResponse};
   }
@@ -6298,7 +6272,6 @@ SwaggerSpecConverter.prototype.responseMessages = function(operation, existingOp
 };
 
 SwaggerSpecConverter.prototype.authorizations = function(obj) {
-  // TODO
   if(!_.isObject(obj)) {
     return;
   }
@@ -7912,9 +7885,6 @@ Operation.prototype.encodeQueryParam = function (arg, maskPasswords) {
   return encodeURIComponent(arg);
 };
 
-/**
- * TODO revisit, might not want to leave '/'
- **/
 Operation.prototype.encodePathParam = function (pathParam, maskPasswords) {
   return encodeURIComponent(pathParam, maskPasswords);
 };
@@ -7996,7 +7966,6 @@ process.binding = function (name) {
     throw new Error('process.binding is not supported');
 };
 
-// TODO(shtylman)
 process.cwd = function () { return '/' };
 process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
@@ -11621,7 +11590,6 @@ function readDoubleQuotedScalar(state, nodeIndent) {
       if (is_EOL(ch)) {
         skipSeparationSpace(state, false, nodeIndent);
 
-        // TODO: rework to inline fn with no type cast?
       } else if (ch < 256 && simpleEscapeCheck[ch]) {
         state.result += simpleEscapeMap[ch];
         state.position++;
@@ -12971,7 +12939,6 @@ function Type(tag, options) {
     }
   });
 
-  // TODO: Add tag format check.
   this.tag          = tag;
   this.kind         = options['kind']         || null;
   this.resolve      = options['resolve']      || function () { return true; };
@@ -18455,9 +18422,6 @@ function isObject(value) {
     return value === Object(value);
 }
 
-// generator related shims
-
-// FIXME: Remove this function once ES6 generators are in SpiderMonkey.
 function isStopIteration(exception) {
     return (
         object_toString(exception) === "[object StopIteration]" ||
@@ -18465,8 +18429,6 @@ function isStopIteration(exception) {
     );
 }
 
-// FIXME: Remove this helper and Q.return once ES6 generators are in
-// SpiderMonkey.
 var QReturnValue;
 if (typeof ReturnValue !== "undefined") {
     QReturnValue = ReturnValue;
@@ -18832,7 +18794,6 @@ Q.join = function (x, y) {
 Promise.prototype.join = function (that) {
     return Q([this, that]).spread(function (x, y) {
         if (x === y) {
-            // TODO: "===" should be Object.is or equiv
             return x;
         } else {
             throw new Error("Can't join: not the same: " + x + " " + y);
@@ -19395,8 +19356,7 @@ function async(makeGenerator) {
                     return when(result.value, callback, errback);
                 }
             } else {
-                // SpiderMonkey Generators
-                // FIXME: Remove this case when SM does ES6 generators.
+
                 try {
                     result = generator[verb](arg);
                 } catch (exception) {
@@ -19427,52 +19387,11 @@ Q.spawn = spawn;
 function spawn(makeGenerator) {
     Q.done(Q.async(makeGenerator)());
 }
-
-// FIXME: Remove this interface once ES6 generators are in SpiderMonkey.
-/**
- * Throws a ReturnValue exception to stop an asynchronous generator.
- *
- * This interface is a stop-gap measure to support generator return
- * values in older Firefox/SpiderMonkey.  In browsers that support ES6
- * generators like Chromium 29, just use "return" in your generator
- * functions.
- *
- * @param value the return value for the surrounding generator
- * @throws ReturnValue exception with the value.
- * @example
- * // ES6 style
- * Q.async(function* () {
- *      var foo = yield getFooPromise();
- *      var bar = yield getBarPromise();
- *      return foo + bar;
- * })
- * // Older SpiderMonkey style
- * Q.async(function () {
- *      var foo = yield getFooPromise();
- *      var bar = yield getBarPromise();
- *      Q.return(foo + bar);
- * })
- */
 Q["return"] = _return;
 function _return(value) {
     throw new QReturnValue(value);
 }
 
-/**
- * The promised function decorator ensures that any promise arguments
- * are settled and passed as values (`this` is also settled and passed
- * as a value).  It will also ensure that the result of a function is
- * always a promise.
- *
- * @example
- * var add = Q.promised(function (a, b) {
- *     return a + b;
- * });
- * add(Q(a), Q(B));
- *
- * @param {function} callback The function to decorate
- * @returns {function} a function that has been decorated.
- */
 Q.promised = promised;
 function promised(callback) {
     return function () {
@@ -19482,13 +19401,6 @@ function promised(callback) {
     };
 }
 
-/**
- * sends a message to a value in a future turn
- * @param object* the recipient
- * @param op the name of the message operation, e.g., "when",
- * @param args further arguments to be forwarded to the operation
- * @returns result {Promise} a promise for the result of the operation
- */
 Q.dispatch = dispatch;
 function dispatch(object, op, args) {
     return Q(object).dispatch(op, args);
@@ -19868,7 +19780,7 @@ Promise.prototype["finally"] = function (callback) {
             return value;
         });
     }, function (reason) {
-        // TODO attempt to recycle the rejection with "this".
+
         return callback.fcall().then(function () {
             throw reason;
         });
@@ -21410,8 +21322,6 @@ exports.toJSON = function(){
  * Check if `obj` is a host object,
  * we don't want to serialize these :)
  *
- * TODO: future proof, move to compoent land
- *
  * @param {Object} obj
  * @return {Boolean}
  * @api private
@@ -22115,7 +22025,7 @@ SwaggerUi.Models.ApiKeyAuthModel = Backbone.Model.extend({
 });
 'use strict';
 
-SwaggerUi.Views.ApiKeyAuthView = Backbone.View.extend({ // TODO: append this to global SwaggerUi
+SwaggerUi.Views.ApiKeyAuthView = Backbone.View.extend({
 
     events: {
         'change .input_apiKey_entry': 'apiKeyChange'
@@ -23121,8 +23031,6 @@ SwaggerUi.Views.OperationView = Backbone.View.extend({
     elem.css(pos);
   },
 
-  // Note: copied from CoffeeScript compiled file
-  // TODO: refactor
   render: function() {
     var a, auth, auths, code, contentTypeModel, isMethodSubmissionSupported, k, key, l, len, len1, len2, len3, len4, m, modelAuths, n, o, p, param, q, ref, ref1, ref2, ref3, ref4, ref5, responseContentTypeView, responseSignatureView, schema, schemaObj, scopeIndex, signatureModel, statusCode, successResponse, type, v, value, produces, isXML, isJSON;
     isMethodSubmissionSupported = jQuery.inArray(this.model.method, this.model.supportedSubmitMethods()) >= 0;
@@ -23405,8 +23313,6 @@ SwaggerUi.Views.OperationView = Backbone.View.extend({
     $('.operation-status', $(this.el)).append(statusCodeView.render().el);
   },
 
-  // Note: copied from CoffeeScript compiled file
-  // TODO: redactor
   submitOperation: function(e) {
     var error_free, form, isFileUpload, map, opts;
     if (e !== null) {
@@ -23612,9 +23518,6 @@ SwaggerUi.Views.OperationView = Backbone.View.extend({
     parent.showStatus(data);
   },
 
-  // Adapted from http://stackoverflow.com/a/2893259/454004
-  // Note: directly ported from CoffeeScript
-  // TODO: Cleanup CoffeeScript artifacts
   formatXml: function(xml) {
     var contexp, fn, formatted, indent, l, lastType, len, lines, ln, pad, reg, transitions, wsexp;
     reg = /(>)(<)(\/*)/g;
@@ -24018,8 +23921,7 @@ SwaggerUi.Views.ParameterView = Backbone.View.extend({
                         disable_properties:true,
                         disable_edit_json:true,
                         iconlib: 'swagger' });
-      // This is so that the signature can send back the sample to the json editor
-      // TODO: SignatureView should expose an event "onSampleClicked" instead
+
       signatureModel.jsonEditor = this.model.jsonEditor;
       $('.body-textarea', $self).hide();
       $('.editor_holder', $self).show();
@@ -25283,10 +25185,8 @@ SwaggerUi.Views.SignatureView = Backbone.View.extend({
   snippetToTextArea: function(val) {
     var textArea = $('textarea', $(this.el.parentNode.parentNode.parentNode));
 
-    // Fix for bug in IE 10/11 which causes placeholder text to be copied to "value"
     if ($.trim(textArea.val()) === '' || textArea.prop('placeholder') === textArea.val()) {
       textArea.val(val);
-      // TODO move this code outside of the view and expose an event instead
       if( this.model.jsonEditor && this.model.jsonEditor.isEnabled()){
         this.model.jsonEditor.setValue(JSON.parse(this.model.sampleJSON));
       }

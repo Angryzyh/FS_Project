@@ -3,12 +3,9 @@ package com.angryzyh.mall.coupon.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.angryzyh.common.to.SpuReductionTo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.angryzyh.mall.coupon.entity.SkuFullReductionEntity;
 import com.angryzyh.mall.coupon.service.SkuFullReductionService;
@@ -30,14 +27,26 @@ public class SkuFullReductionController {
     @Autowired
     private SkuFullReductionService skuFullReductionService;
 
+
+    /**
+     * mall-product模块商品新增远程调用
+     * @param spuReductionTo 封装了 满减,折扣,会员价三个表的实体类
+     * @return
+     * 业务调用->{@link com.angryzyh.mall.product.service.impl}
+     */
+    @PostMapping("save/spu")
+    public R saveAllCouponFromSpu(@RequestBody SpuReductionTo spuReductionTo) {
+        skuFullReductionService.saveAllCouponFromSpu(spuReductionTo);
+        return R.ok();
+    }
+
     /**
      * 列表
      */
     @RequestMapping("/list")
     //@RequiresPermissions("coupon:skufullreduction:list")
-    public R list(@RequestParam Map<String, Object> params){
+    public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = skuFullReductionService.queryPage(params);
-
         return R.ok().put("page", page);
     }
 
