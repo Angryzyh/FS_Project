@@ -4,13 +4,11 @@ import com.angryzyh.common.to.SpuBoundsTo;
 import com.angryzyh.common.to.SpuReductionTo;
 import com.angryzyh.common.utils.R;
 import com.angryzyh.mall.product.controller.SpuInfoController;
-import com.angryzyh.mall.product.dao.ProductAttrValueDao;
-import com.angryzyh.mall.product.dao.SpuImagesDao;
-import com.angryzyh.mall.product.dao.SpuInfoDescDao;
 import com.angryzyh.mall.product.entity.*;
 import com.angryzyh.mall.product.feign.CouponFeignService;
 import com.angryzyh.mall.product.service.*;
 import com.angryzyh.mall.product.vo.spuvo.*;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +45,6 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     SkuImagesService skuImagesService;
     @Autowired
     SkuSaleAttrValueService skuSaleAttrValueService;
-
     //远程调用
     @Autowired
     CouponFeignService couponFeignService;
@@ -56,7 +53,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<SpuInfoEntity> page = this.page(
                 new Query<SpuInfoEntity>().getPage(params),
-                new QueryWrapper<SpuInfoEntity>()
+                new QueryWrapper<>()
         );
         return new PageUtils(page);
     }
@@ -162,8 +159,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                     BeanUtils.copyProperties(img, skuImagesEntity);
                     skuImagesEntity.setSkuId(skuInfoEntity.getSkuId());
                     return skuImagesEntity;
-                    }).filter(img->{
-                        return StringUtils.isNotBlank(img.getImgUrl()); })
+                    }).filter(img-> StringUtils.isNotBlank(img.getImgUrl()))
                     .collect(Collectors.toList());
                 skuImagesService.saveBatch(imagesEntities);
                 //6.3)、sku的销售属性信息：pms_sku_sale_attr_value
@@ -201,5 +197,48 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 }
             });
         }
+    }
+
+    /**
+     * 分页 模糊 匹配 查询
+     * @param params {
+     *               page: 1,//当前页码
+     *               limit: 10,//每页记录数
+     *               sidx: 'id',//排序字段
+     *               order: 'asc/desc',//排序方式
+     *               key: '华为',//检索关键字
+     *               catelogId: 6,//三级分类id
+     *               brandId: 1,//品牌id
+     *               status: 0,//商品状态
+     *               }
+     * @return page
+     */
+    @Override
+    public PageUtils queryPageByCondition(Map<String, Object> params) {
+        String key = (String) params.get("key");
+        String catelogId = (String) params.get("catelogId");
+        String brandId = (String) params.get("brandId");
+        String status = (String) params.get("status");
+        LambdaQueryWrapper<SpuInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
+        if (StringUtils.isNotBlank(key)) {
+            queryWrapper.and(x -> {
+                x.eq(SpuInfoEntity::getId, key)
+                        .or().like(SpuInfoEntity::getSpuName, key);
+            });
+        }
+        if (StringUtils.isNotBlank(catelogId) && !"0".equalsIgnoreCase(catelogId)) {
+            queryWrapper.eq(SpuInfoEntity::getCatalogId, catelogId);
+        }
+        if (StringUtils.isNotBlank(brandId) && !"0".equalsIgnoreCase(brandId)) {
+            queryWrapper.eq(SpuInfoEntity::getBrandId, brandId);
+        }
+        if (StringUtils.isNotBlank(status)) {
+            queryWrapper.eq(SpuInfoEntity::getPublishStatus, status);
+        }
+        IPage<SpuInfoEntity> page = this.page(
+                new Query<SpuInfoEntity>().getPage(params),
+                queryWrapper
+        );
+        return new PageUtils(page);
     }
 }

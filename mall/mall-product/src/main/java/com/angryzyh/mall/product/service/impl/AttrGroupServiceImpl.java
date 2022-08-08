@@ -9,6 +9,7 @@ import com.angryzyh.mall.product.vo.AttrGroupRelationVo;
 import com.angryzyh.mall.product.vo.AttrGroupWithAttrRespVo;
 import com.angryzyh.mall.product.vo.AttrVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,8 +106,6 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
      */
     @Override
     public List<AttrGroupWithAttrRespVo> getAttrAttrGroupByCatelogId(Long catelogId) {
-
-
         return baseMapper.selectList(new LambdaQueryWrapper<AttrGroupEntity>()
                 .eq(AttrGroupEntity::getCatelogId, catelogId))
                 .stream()
@@ -127,7 +126,11 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
                                     BeanUtils.copyProperties(y, attrVo);
                                     return attrVo;
                                 }).collect(Collectors.toList());
-                    x.setAttrs(childAttrs);
+                        if (CollectionUtils.isNotEmpty(childAttrs)){
+                            x.setAttrs(childAttrs);
+                        }else {
+                            x.setAttrs(new ArrayList<>());
+                        }
                 }).collect(Collectors.toList());
     }
     /*@Override
@@ -159,7 +162,11 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
                                 BeanUtils.copyProperties(attrEntitie, attrVo);
                                 return attrVo;
                             }).collect(Collectors.toList());
-                    vo.setAttrVos(childAttrs);
+                     if (CollectionUtils.isEmpty(childAttrs)){
+                            vo.setAttrs(childAttrs);
+                        }else {
+                             vo.setAttrs(new ArrayList<>());
+                        }
                 })
                 .collect(Collectors.toList());
         return collect;

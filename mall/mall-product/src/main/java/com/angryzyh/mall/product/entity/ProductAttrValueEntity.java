@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
-import java.util.Date;
 import lombok.Data;
 
 /**
@@ -18,7 +17,6 @@ import lombok.Data;
 @TableName("pms_product_attr_value")
 public class ProductAttrValueEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
-
 	/**
 	 * id
 	 */
@@ -48,5 +46,4 @@ public class ProductAttrValueEntity implements Serializable {
 	 * 快速展示【是否展示在介绍上；0-否 1-是】
 	 */
 	private Integer quickShow;
-
 }

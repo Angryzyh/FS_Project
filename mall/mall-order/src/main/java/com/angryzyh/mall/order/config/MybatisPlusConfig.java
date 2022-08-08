@@ -1,4 +1,4 @@
-package com.angryzyh.mall.product.config;
+package com.angryzyh.mall.order.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@MapperScan("com.angryzyh.mall.product.dao")
+@MapperScan("com.angryzyh.mall.order.dao")
 @EnableTransactionManagement //开启事务注解
 @Configuration
 public class MybatisPlusConfig {

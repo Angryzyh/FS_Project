@@ -16,5 +16,8 @@ import java.util.Map;
 public interface WareInfoService extends IService<WareInfoEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    //  关键词 模糊匹配全查询
+    PageUtils queryPageByKey(Map<String, Object> params);
 }
 

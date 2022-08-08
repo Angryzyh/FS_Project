@@ -1,6 +1,7 @@
 package com.angryzyh.mall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,6 @@ import com.angryzyh.mall.product.entity.ProductAttrValueEntity;
 import com.angryzyh.mall.product.service.ProductAttrValueService;
 import com.angryzyh.common.utils.PageUtils;
 import com.angryzyh.common.utils.R;
-
-
 
 /**
  * spu属性值
@@ -37,7 +36,6 @@ public class ProductAttrValueController {
     //@RequiresPermissions("product:productattrvalue:list")
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = productAttrValueService.queryPage(params);
-
         return R.ok().put("page", page);
     }
 
@@ -49,7 +47,6 @@ public class ProductAttrValueController {
     //@RequiresPermissions("product:productattrvalue:info")
     public R info(@PathVariable("id") Long id){
 		ProductAttrValueEntity productAttrValue = productAttrValueService.getById(id);
-
         return R.ok().put("productAttrValue", productAttrValue);
     }
 
@@ -60,7 +57,6 @@ public class ProductAttrValueController {
     //@RequiresPermissions("product:productattrvalue:save")
     public R save(@RequestBody ProductAttrValueEntity productAttrValue){
 		productAttrValueService.save(productAttrValue);
-
         return R.ok();
     }
 
@@ -71,7 +67,6 @@ public class ProductAttrValueController {
     //@RequiresPermissions("product:productattrvalue:update")
     public R update(@RequestBody ProductAttrValueEntity productAttrValue){
 		productAttrValueService.updateById(productAttrValue);
-
         return R.ok();
     }
 
@@ -82,8 +77,6 @@ public class ProductAttrValueController {
     //@RequiresPermissions("product:productattrvalue:delete")
     public R delete(@RequestBody Long[] ids){
 		productAttrValueService.removeByIds(Arrays.asList(ids));
-
         return R.ok();
     }
-
 }

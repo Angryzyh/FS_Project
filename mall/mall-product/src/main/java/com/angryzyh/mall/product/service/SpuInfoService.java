@@ -20,5 +20,8 @@ public interface SpuInfoService extends IService<SpuInfoEntity> {
 
     // 保存新增商品信息
     void saveSpuInfo(SpuSaveVo vo);
+
+    //分页 模糊 匹配 查询
+    PageUtils queryPageByCondition(Map<String, Object> params);
 }
 

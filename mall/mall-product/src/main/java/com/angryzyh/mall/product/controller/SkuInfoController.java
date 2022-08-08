@@ -4,18 +4,12 @@ import java.util.Arrays;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.angryzyh.mall.product.entity.SkuInfoEntity;
 import com.angryzyh.mall.product.service.SkuInfoService;
 import com.angryzyh.common.utils.PageUtils;
 import com.angryzyh.common.utils.R;
-
-
 
 /**
  * sku信息
@@ -31,16 +25,17 @@ public class SkuInfoController {
     private SkuInfoService skuInfoService;
 
     /**
+     * GET
+     * /product/skuinfo/list
+     * sku检索 模糊 条件匹配 分页查询
      * 列表
      */
-    @RequestMapping("/list")
+    @GetMapping("/list")
     //@RequiresPermissions("product:skuinfo:list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = skuInfoService.queryPage(params);
-
+        PageUtils page = skuInfoService.queryPageByCondition(params);
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息
@@ -49,7 +44,6 @@ public class SkuInfoController {
     //@RequiresPermissions("product:skuinfo:info")
     public R info(@PathVariable("skuId") Long skuId){
 		SkuInfoEntity skuInfo = skuInfoService.getById(skuId);
-
         return R.ok().put("skuInfo", skuInfo);
     }
 
@@ -60,7 +54,6 @@ public class SkuInfoController {
     //@RequiresPermissions("product:skuinfo:save")
     public R save(@RequestBody SkuInfoEntity skuInfo){
 		skuInfoService.save(skuInfo);
-
         return R.ok();
     }
 
@@ -71,7 +64,6 @@ public class SkuInfoController {
     //@RequiresPermissions("product:skuinfo:update")
     public R update(@RequestBody SkuInfoEntity skuInfo){
 		skuInfoService.updateById(skuInfo);
-
         return R.ok();
     }
 
@@ -82,7 +74,6 @@ public class SkuInfoController {
     //@RequiresPermissions("product:skuinfo:delete")
     public R delete(@RequestBody Long[] skuIds){
 		skuInfoService.removeByIds(Arrays.asList(skuIds));
-
         return R.ok();
     }
 
