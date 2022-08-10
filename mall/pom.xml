@@ -23,6 +23,7 @@
         <module>mall-order</module>
         <module>mall-product</module>
         <module>mall-ware</module>
+        <module>mall-search</module>
         <!--第三方模块-->
         <module>renren-fast</module>
         <module>renren-generator</module>
