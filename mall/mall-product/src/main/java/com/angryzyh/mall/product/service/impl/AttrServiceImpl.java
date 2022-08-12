@@ -281,4 +281,14 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         IPage<AttrEntity> page = this.page(new Query<AttrEntity>().getPage(params), queryWrapper);
         return new PageUtils(page);
     }
+
+    /**
+     * 查找出可以被检索的attrIds
+     * @param attrIds
+     * @return
+     */
+    @Override
+    public List<Long> listBySearchType(List<Long> attrIds) {
+        return baseMapper.listBySearchType(attrIds);
+    }
 }

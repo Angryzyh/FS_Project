@@ -18,4 +18,10 @@
         WHERE sku_id = #{wareSkuEntity.skuId}
           AND ware_id = #{wareSkuEntity.wareId};
     </update>
+
+    <select id="getSkuHasStock" resultType="java.lang.Long">
+        SELECT SUM(stock - stock_locked)
+        FROM wms_ware_sku
+        WHERE sku_id = #{skuId};
+    </select>
 </mapper>

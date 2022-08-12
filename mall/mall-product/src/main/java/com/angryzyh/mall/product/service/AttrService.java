@@ -37,5 +37,8 @@ public interface AttrService extends IService<AttrEntity> {
 
     // 先查询 当前属性组 一同的 分类 下的属性表中没有被关联的属性
     PageUtils getNoRelaionAttr(Map<String, Object> params, Long attrgroupId);
+
+    // 查找出可以被检索的attrIds
+    List<Long> listBySearchType(List<Long> attrIds);
 }
 

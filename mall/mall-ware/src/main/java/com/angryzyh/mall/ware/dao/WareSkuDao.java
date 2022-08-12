@@ -17,4 +17,6 @@ public interface WareSkuDao extends BaseMapper<WareSkuEntity> {
 
 
     void saveOrUpdateOwn(@Param("wareSkuEntity") WareSkuEntity wareSkuEntity);
+
+    Long getSkuHasStock(@Param("skuId") Long skuId);
 }

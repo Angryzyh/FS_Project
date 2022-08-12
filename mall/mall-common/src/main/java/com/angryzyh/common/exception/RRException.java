@@ -56,6 +56,4 @@ public class RRException extends RuntimeException {
 	public void setCode(int code) {
 		this.code = code;
 	}
-	
-	
 }

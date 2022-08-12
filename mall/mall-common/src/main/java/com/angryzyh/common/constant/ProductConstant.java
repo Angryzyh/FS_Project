@@ -14,4 +14,14 @@ public class ProductConstant {
         private final int code;
         private final String msg;
     }
+
+    @Getter
+    @AllArgsConstructor
+    public enum ProductUpStatusEnum {
+        NEW_SPU(0, "新建"),
+        UP_SPU(1, "商品上架"),
+        DOWN_SPU(2, "商品下架");
+        private final int code;
+        private final String msg;
+    }
 }

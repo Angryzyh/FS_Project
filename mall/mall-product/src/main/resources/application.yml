@@ -27,7 +27,6 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
-
 #日志打印级别
 logging:
   level:

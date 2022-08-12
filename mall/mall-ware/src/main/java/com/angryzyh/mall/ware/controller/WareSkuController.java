@@ -1,8 +1,10 @@
 package com.angryzyh.mall.ware.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.angryzyh.common.to.SkuHasStockTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +27,17 @@ import com.angryzyh.common.utils.R;
 public class WareSkuController {
     @Autowired
     private WareSkuService wareSkuService;
+
+    /**
+     * 远程调用接口, 商品维护->商品管理->上架 ,用于查询当前sku商品是否有库存
+     * @param skuIds skuIds
+     * @return 每个skuIds 对应的 库存信息
+     */
+    @PostMapping("/has/stock")
+    public R getSkuHasStock(@RequestBody List<Long> skuIds) {
+        List<SkuHasStockTo> tos = wareSkuService.getSkuHasStock(skuIds);
+        return R.ok().put("data",tos);
+    }
 
     /**
      * 列表
@@ -69,7 +82,6 @@ public class WareSkuController {
     //@RequiresPermissions("ware:waresku:update")
     public R update(@RequestBody WareSkuEntity wareSku){
 		wareSkuService.updateById(wareSku);
-
         return R.ok();
     }
 
@@ -80,8 +92,6 @@ public class WareSkuController {
     //@RequiresPermissions("ware:waresku:delete")
     public R delete(@RequestBody Long[] ids){
 		wareSkuService.removeByIds(Arrays.asList(ids));
-
         return R.ok();
     }
-
 }

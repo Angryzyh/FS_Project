@@ -1,11 +1,18 @@
 package com.angryzyh.mall.product.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.angryzyh.common.constant.ProductConstant;
+import com.angryzyh.common.to.SkuHasStockTo;
 import com.angryzyh.common.to.SpuBoundsTo;
 import com.angryzyh.common.to.SpuReductionTo;
+import com.angryzyh.common.to.es.SkuEsModel;
 import com.angryzyh.common.utils.R;
 import com.angryzyh.mall.product.controller.SpuInfoController;
 import com.angryzyh.mall.product.entity.*;
 import com.angryzyh.mall.product.feign.CouponFeignService;
+import com.angryzyh.mall.product.feign.SearchFeignService;
+import com.angryzyh.mall.product.feign.WareFeignService;
 import com.angryzyh.mall.product.service.*;
 import com.angryzyh.mall.product.vo.spuvo.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -45,9 +52,17 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     SkuImagesService skuImagesService;
     @Autowired
     SkuSaleAttrValueService skuSaleAttrValueService;
+    @Autowired
+    CategoryService categoryService;
+    @Autowired
+    BrandService brandService;
     //远程调用
     @Autowired
     CouponFeignService couponFeignService;
+    @Autowired
+    WareFeignService wareFeignService;
+    @Autowired
+    SearchFeignService searchFeignService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -240,5 +255,90 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 queryWrapper
         );
         return new PageUtils(page);
+    }
+
+    /**
+     * 商品上架 保存到es
+     * @param spuId spuId
+     * 需求: 根据spuId查到当前商品的可以被检索的 规格属性 放到es里面
+     */
+    @Override
+    public void up(Long spuId) {
+        // 1. 查询 获取 SkuInfoEntity
+        List<SkuInfoEntity> skuInfoEntityList = skuInfoService.list(new LambdaQueryWrapper<SkuInfoEntity>()
+                .eq(spuId != null, SkuInfoEntity::getSpuId, spuId));
+        // 2. 业务 hasStock(远程调用mall-ware) hotScore 先获取获取skuIds
+        Map<Long, Boolean> hasStockMap = null;
+        try {
+            List<Long> skuIds = skuInfoEntityList.stream().map(SkuInfoEntity::getSkuId).collect(Collectors.toList());
+            R skuHasStock = wareFeignService.getSkuHasStock(skuIds);
+            Object data = skuHasStock.get("data");
+            String s = JSON.toJSONString(data);
+            List<SkuHasStockTo> skuHasStockTos = JSON.parseObject(s, new TypeReference<List<SkuHasStockTo>>(){});
+            hasStockMap = skuHasStockTos.stream().collect(Collectors.toMap(SkuHasStockTo::getSkuId, SkuHasStockTo::getHasStock));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // 4. 查询attrs 因为都是 同一类型的spu 所以在最外层查询封装可以检索的规格属性
+        // 查询 当前spuId 下的所有attrs
+        List<ProductAttrValueEntity> attrForSpu = productAttrValueService.getAttrForSpu(spuId);
+        // 查询到所有规格属性的attrId
+        List<Long> attrIds = attrForSpu.stream().map(ProductAttrValueEntity::getAttrId).collect(Collectors.toList());
+        // 查找出可以被检索的attrIds
+        List<Long> attrIdsBySearch = attrService.listBySearchType(attrIds);
+        // 过滤原 skuInfoEntityList 去除掉不在attrForSpu内的 attr
+        List<SkuEsModel.Attrs> skuEsModelAttrs = attrForSpu.stream()
+                .filter(attr -> attrIdsBySearch.contains(attr.getAttrId()))
+                .map(attr -> {
+                    SkuEsModel.Attrs attrEs = new SkuEsModel.Attrs();
+                    BeanUtils.copyProperties(attr, attrEs);
+                    return attrEs;})
+                .collect(Collectors.toList());
+        // 接 1. 遍历所有 sku 把 SkuEsModel 所要的数据塞进去
+        Map<Long, Boolean> finalHasStockMap = hasStockMap;
+        List<SkuEsModel> skuEsModelList = skuInfoEntityList.stream()
+            .map(sku -> {
+                // 0. 创建es 封装对象
+                SkuEsModel skuEsModel = new SkuEsModel();
+                BeanUtils.copyProperties(sku, skuEsModel);
+                /* private BigDecimal skuPrice; // 字段不匹配
+                    private String skuImg;       // 字段不匹配*/
+                skuEsModel.setSkuImg(sku.getSkuDefaultImg());
+                skuEsModel.setSkuPrice(sku.getPrice());
+                // 2. 业务 hasStock(远程调用mall-ware) hotScore
+                if (finalHasStockMap != null) {
+                    skuEsModel.setHasStock(finalHasStockMap.get(sku.getSkuId()));
+                } else {
+                    skuEsModel.setHasStock(true);
+                }
+                //  hotScore 热销指数
+                skuEsModel.setHotScore(0L);
+                // 3. 查询 获取 CategoryEntity & BrandEntity
+                // From CategoryEntity
+                //private String catalogName;
+                CategoryEntity categoryEntity = categoryService.getById(sku.getCatalogId());
+                skuEsModel.setCatalogName(categoryEntity.getName());
+                // From BrandEntity
+                //private String brandName;
+                //private String brandImg;
+                BrandEntity brandEntity = brandService.getById(sku.getBrandId());
+                skuEsModel.setBrandName(brandEntity.getName());
+                skuEsModel.setBrandImg(brandEntity.getLogo());
+                // 4. 查询attrs 因为都是 同一类型的spu 所以在最外层查询封装可以检索的规格属性
+                skuEsModel.setAttrs(skuEsModelAttrs);
+                return skuEsModel;
+            }).collect(Collectors.toList());
+        //5. 远程调用search服务,把商品信息上传到 es服务器
+        R r = searchFeignService.productStatusUp(skuEsModelList);
+        if (r.getCode() == 0) {
+            //6. 远程调用成功修改spu的spuStatus
+            SpuInfoEntity spuInfoEntity = new SpuInfoEntity();
+            spuInfoEntity.setPublishStatus(ProductConstant.ProductUpStatusEnum.UP_SPU.getCode());
+            spuInfoEntity.setUpdateTime(new Date());
+            spuInfoEntity.setId(spuId);
+            baseMapper.updateById(spuInfoEntity);
+        }else {
+            // 接口被不同服务重复调用,接口等幂性
+        }
     }
 }
